@@ -1,0 +1,30 @@
+# Install homebrew and cask
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew tap caskroom/cask
+
+# Command Line
+brew install zsh
+curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
+brew cask install iterm2
+ 
+# Software
+brew install node
+brew cask install google-chrome
+brew cask install visual-studio-code
+brew cask install sublime-text
+brew cask install spectacle
+brew cask install docker 
+brew cask install alfred
+
+# Global Node packages
+npm i -g n http-server nodemon
+
+# Keyboard repeat speed
+defaults write -g InitialKeyRepeat -int 10
+defaults write -g KeyRepeat -int 1
+
+# SSH Key setup
+TIME=$(date +%s)
+mkdir -p ~/.ssh
+ssh-keygen -t rsa -f "$HOME/.ssh/id_rsa_$TIME" -N ''
+ssh-add -K "$HOME/.ssh/id_rsa_$TIME"
