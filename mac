@@ -28,3 +28,7 @@ TIME=$(date +%s)
 mkdir -p ~/.ssh
 ssh-keygen -t rsa -f "$HOME/.ssh/id_rsa_$TIME" -N ''
 ssh-add -K "$HOME/.ssh/id_rsa_$TIME"
+
+# Git aliases
+git config --global alias.st status
+git config --global alias.co checkout
