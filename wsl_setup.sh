@@ -31,6 +31,7 @@ echo 'alias grh="git fetch && git reset --hard"' >> ~/.zshrc
 
 # Zsh install and setup
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+git config --global oh-my-zsh.hide-info 1
 
 # Docker Compose
 
