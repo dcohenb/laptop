@@ -1,34 +1,111 @@
-# Install homebrew and cask
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-brew tap caskroom/cask
+#!/bin/bash
 
-# Command Line
-brew install zsh
-curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
-brew cask install iterm2
- 
-# Software
-brew install node
-brew cask install google-chrome
-brew cask install visual-studio-code
-brew cask install sublime-text
-brew cask install spectacle
-brew cask install docker 
-brew cask install alfred
+if [ ! -d ~/.oh-my-zsh ]; then
+   echo "Install zsh first using:"
+   echo 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
+   exit
+fi
 
-# Global Node packages
-npm i -g n http-server nodemon
+# git && ssh Key setup
+SSH_KEY_PATH="$HOME/.ssh/id_ed25519"
+if [ ! -f "$SSH_KEY_PATH" ]; then
+   echo "Setting up git & ssh..."
+   echo "What is your email?"
+   read email
+   echo "And your full name?"
+   read name
+
+   mkdir -p "$HOME/.ssh"
+   ssh-keygen -t ed25519 -f $SSH_KEY_PATH -N "" -C $email
+   ssh-add -K $SSH_KEY_PATH
+
+   git config --global user.email $email
+   git config --global user.name $name
+fi
+
+# Git
+git config --global alias.st status
+git config --global alias.co checkout
+
+# Install homebrew
+if [ ! -f "/opt/homebrew/bin/brew" ]; then
+   echo "Installing Homebrew"
+   
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+else
+   echo "Homebrew already installed, moving on..."
+fi
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Command Line (zsh, & iTerm2)
+if grep -Fxq "# mac setup script" ~/.zshrc
+then
+   echo ".zshrc already setup, moving on..."
+else
+   echo "setting up zsh config"
+
+   echo "" >> ~/.zshrc
+   echo "# mac setup script" >> ~/.zshrc
+   echo "echo \"Hello $name\"" >> ~/.zshrc
+
+   # brew setup
+   echo "" >> ~/.zshrc
+   echo "# brew" >> ~/.zshrc
+   echo 'eval $(/opt/homebrew/bin/brew shellenv)' >> ~/.zshrc
+
+   # docker aliases
+   echo "" >> ~/.zshrc
+   echo '# Docker Aliases'                         >> ~/.zshrc
+   echo 'alias dc=docker-compose'                  >> ~/.zshrc # Alias dc = docker-compose
+   echo 'dps() { docker ps }'                      >> ~/.zshrc # List all running containers
+   echo 'dsa() { docker stop $(docker ps -a -q) }' >> ~/.zshrc # Stop all running containers
+   echo 'dka() { docker kill $(docker ps -q) }'    >> ~/.zshrc # Kill all running containers
+   echo 'dra() { docker rm $(docker ps -a -q) }'   >> ~/.zshrc # Remove all containers
+   echo 'dsh() { docker exec -it $1 /bin/sh }'     >> ~/.zshrc # sh into container with id
+   echo 'dbash() { docker exec -it $1 /bin/bash }' >> ~/.zshrc # bash into container with id
+   echo 'drc() {docker exec -it $1 rails c}'       >> ~/.zshrc # rails console into container with id
+fi
 
 # Keyboard repeat speed
+defaults write -g ApplePressAndHoldEnabled -bool false
 defaults write -g InitialKeyRepeat -int 10
 defaults write -g KeyRepeat -int 1
 
-# SSH Key setup
-TIME=$(date +%s)
-mkdir -p ~/.ssh
-ssh-keygen -t rsa -f "$HOME/.ssh/id_rsa_$TIME" -N ''
-ssh-add -K "$HOME/.ssh/id_rsa_$TIME"
+# Show hidden files and folders
+defaults write com.apple.Finder AppleShowAllFiles true
 
-# Git aliases
-git config --global alias.st status
-git config --global alias.co checkout
+# Sublime Text Setup
+echo "Setting up Sublime Text"
+brew install --cask sublime-text
+SUBL_DIR="$HOME/Library/Application Support/Sublime Text"
+SUBL_PKG_CTRL="$SUBL_DIR/Installed Packages/Package Control.sublime-package"
+SUBL_PKG_CTRL_SETTINGS="$SUBL_DIR/Packages/User/Package Control.sublime-settings"
+if [ ! -f "$SUBL_PKG_CTRL" ]; then
+   curl -o "$SUBL_PKG_CTRL" "https://packagecontrol.io/Package Control.sublime-package"
+fi
+if [ ! -d "$SUBL_PKG_CTRL_SETTINGS" ]; then
+   echo '{"installed_packages": ["GenerateUUID", "SideBarEnhancements", "CodeFormatter", "Color Highlighter", "CoolBase64", "AutoFileName", "Pretty JSON"]}' >> "$SUBL_PKG_CTRL_SETTINGS"
+fi
+
+# Software
+echo "Installing apps..."
+brew install --cask iterm2
+brew install --cask 1password
+brew install --cask google-chrome
+brew install --cask spectacle
+brew install --cask docker
+brew install --cask docker-machine
+brew install --cask alfred
+brew install --cask unity-hub
+brew install --cask rider
+brew install --cask rubymine
+brew install --cask whatsapp
+brew install --cask spotify
+brew install --cask discord
+
+# Node tools
+brew install node
+npm i -g http-server
+
+# Dev Env
+mkdir -p ~/Projects
