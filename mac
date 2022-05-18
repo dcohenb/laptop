@@ -4,7 +4,7 @@ xcode-select --install
 
 if [ ! -d ~/.oh-my-zsh ]; then
    echo "Install zsh first using:"
-   echo 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
+   echo 'sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
    exit
 fi
 
@@ -33,7 +33,7 @@ git config --global alias.co checkout
 if [ ! -f "/opt/homebrew/bin/brew" ]; then
    echo "Installing Homebrew"
    
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else
    echo "Homebrew already installed, moving on..."
 fi
