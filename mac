@@ -28,6 +28,13 @@ fi
 # Git
 git config --global alias.st status
 git config --global alias.co checkout
+git config --global alias.cm "\!git add -A && git commit -m"
+git config --global alias.wip "commit -am 'wip'"
+git config --global alias.save "\!git add -A && git commit -m 'SAVEPOINT'"
+git config --global alias.undo "reset HEAD~1 --mixed"
+
+git config pull.rebase false # make merge the default pull behaviour
+git config --global pager.branch false # Make git branch behave like it should
 
 # Install homebrew
 if [ ! -f "/opt/homebrew/bin/brew" ]; then
