@@ -83,38 +83,18 @@ defaults write -g KeyRepeat -int 1
 # Show hidden files and folders
 defaults write com.apple.Finder AppleShowAllFiles true
 
-# Sublime Text Setup
-echo "Setting up Sublime Text"
-brew install --cask sublime-text
-SUBL_DIR="$HOME/Library/Application Support/Sublime Text"
-SUBL_PKG_CTRL="$SUBL_DIR/Installed Packages/Package Control.sublime-package"
-SUBL_PKG_CTRL_SETTINGS="$SUBL_DIR/Packages/User/Package Control.sublime-settings"
-if [ ! -f "$SUBL_PKG_CTRL" ]; then
-   curl -o "$SUBL_PKG_CTRL" "https://packagecontrol.io/Package Control.sublime-package"
-fi
-if [ ! -d "$SUBL_PKG_CTRL_SETTINGS" ]; then
-   echo '{"installed_packages": ["GenerateUUID", "SideBarEnhancements", "CodeFormatter", "Color Highlighter", "CoolBase64", "AutoFileName", "Pretty JSON"]}' >> "$SUBL_PKG_CTRL_SETTINGS"
-fi
-
 # Software
 echo "Installing apps..."
+brew install --cask sublime-text
 brew install --cask iterm2
 brew install --cask 1password
 brew install --cask google-chrome
 brew install --cask spectacle
 brew install --cask docker
-brew install --cask docker-machine -f
-brew install --cask alfred
-brew install --cask unity-hub
-brew install --cask rider
-brew install --cask rubymine
 brew install --cask whatsapp
 brew install --cask spotify
 brew install --cask discord
-
-# Node tools
-brew install node
-npm i -g http-server
+brew install --cask visual-studio-code
 
 # Dev Env
 mkdir -p ~/Projects
