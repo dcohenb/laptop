@@ -46,7 +46,7 @@ else
 fi
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# Command Line (zsh, & iTerm2)
+# Command Line configs (zsh)
 if grep -Fxq "# mac setup script" ~/.zshrc
 then
    echo ".zshrc already setup, moving on..."
@@ -65,7 +65,7 @@ else
    # docker aliases
    echo "" >> ~/.zshrc
    echo '# Docker Aliases'                         >> ~/.zshrc
-   echo 'alias dc=docker-compose'                  >> ~/.zshrc # Alias dc = docker-compose
+   echo 'alias dc="docker compose"'                >> ~/.zshrc # Alias dc = docker compose
    echo 'dps() { docker ps }'                      >> ~/.zshrc # List all running containers
    echo 'dsa() { docker stop $(docker ps -a -q) }' >> ~/.zshrc # Stop all running containers
    echo 'dka() { docker kill $(docker ps -q) }'    >> ~/.zshrc # Kill all running containers
@@ -85,16 +85,22 @@ defaults write com.apple.Finder AppleShowAllFiles true
 
 # Software
 echo "Installing apps..."
-brew install --cask sublime-text
-brew install --cask iterm2
 brew install --cask 1password
-brew install --cask google-chrome
-brew install --cask spectacle
+brew install --cask sublime-text
+brew install --cask google-chrome      # Browser for work stuff
+brew install --cask brave-browser      # Browser for personal stuff
 brew install --cask docker
 brew install --cask whatsapp
 brew install --cask spotify
 brew install --cask discord
 brew install --cask visual-studio-code
+brew install --cask rectangle 		   # Window manager
+brew install --cask iterm2             # Good ol' iterm2 - considering changing to warp
+brew install --cask warp			      # Modern Terminal
+brew install --cask container-ps	      # Docker manager
+brew install --cask maccy			      # Clipboard manager
+brew install --cask raycast			   # Spotlight alternative
+
 
 # Dev Env
 mkdir -p ~/Projects
