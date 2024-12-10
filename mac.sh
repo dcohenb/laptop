@@ -100,7 +100,55 @@ brew install --cask warp			      # Modern Terminal
 brew install --cask container-ps	      # Docker manager
 brew install --cask maccy			      # Clipboard manager
 brew install --cask raycast			   # Spotlight alternative
+brew install --cask iina			      # Open Source media player - replacement for quickTime / apple music
 
-
-# Dev Env
+# Dev Env folder
 mkdir -p ~/Projects
+
+# Make IINA the default media player
+# Check if duti is installed - duti is used to set default apps for file types
+if ! command -v duti &> /dev/null; then
+    echo "duti is not installed. Installing it via Homebrew..."
+    brew install duti
+fi
+
+# Common media UTIs
+declare -a MEDIA_EXTENSIONS=(
+    # Audio formats
+    "mp3"   # MP3 audio
+    "wav"   # WAV audio
+    "flac"  # FLAC audio
+    "aac"   # AAC audio
+    "ogg"   # OGG audio
+    "opus"  # OPUS audio
+    "m4a"   # M4A audio
+    "aiff"  # AIFF audio
+    "alac"  # ALAC (Apple Lossless Audio Codec)
+    "wma"   # Windows Media Audio
+    "caf"   # Core Audio Format
+    
+    # Video formats
+    "mp4"   # MP4 video
+    "mkv"   # MKV video
+    "avi"   # AVI video
+    "mov"   # QuickTime video
+    "mpeg"  # MPEG video
+    "ogv"   # OGV video
+    "webm"  # WEBM video
+    "m4v"   # M4V video
+    "3gp"   # 3GP video
+    "ts"    # MPEG-TS video
+    "wmv"   # Windows Media Video
+    "flv"   # Flash Video
+    "vob"   # DVD Video Object
+    "f4v"   # Flash MP4 Video
+    "rm"    # RealMedia
+    "rmvb"  # RealMedia Variable Bitrate
+)
+
+echo "Setting IINA as the default player for supported media files..."
+for EXT in "${MEDIA_EXTENSIONS[@]}"; do
+    duti -s "com.colliderli.iina" "$EXT" all
+done
+
+echo "IINA has been set as the default player for all supported media files."
