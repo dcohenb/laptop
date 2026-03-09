@@ -39,7 +39,7 @@ git config --global pager.branch false # Make git branch behave like it should
 # Install homebrew
 if [ ! -f "/opt/homebrew/bin/brew" ]; then
    echo "Installing Homebrew"
-   
+
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else
    echo "Homebrew already installed, moving on..."
@@ -75,32 +75,36 @@ else
    echo 'drc() {docker exec -it $1 rails c}'       >> ~/.zshrc # rails console into container with id
 fi
 
-# Keyboard repeat speed
+# Key repeats - repeat the key when holding it
 defaults write -g ApplePressAndHoldEnabled -bool false
-defaults write -g InitialKeyRepeat -int 10
-defaults write -g KeyRepeat -int 1
 
 # Show hidden files and folders
 defaults write com.apple.Finder AppleShowAllFiles true
 
+# Change Screenshot default save location
+mkdir -p ~/Pictures/Screenshots
+defaults write com.apple.screencapture location ~/Pictures/Screenshots
+
+# Screenshot Format: Change from PNG (larger) to JPG
+defaults write com.apple.screencapture type jpg
+
 # Software
 echo "Installing apps..."
+brew install node
+brew install ollama
 brew install --cask 1password
-brew install --cask sublime-text
-brew install --cask google-chrome      # Browser for work stuff
-brew install --cask brave-browser      # Browser for personal stuff
-brew install --cask docker
-brew install --cask whatsapp
+brew install --cask cursor
+brew install --cask maccy
 brew install --cask spotify
-brew install --cask discord
-brew install --cask visual-studio-code
-brew install --cask rectangle 		   # Window manager
-brew install --cask iterm2             # Good ol' iterm2 - considering changing to warp
-brew install --cask warp			      # Modern Terminal
-brew install --cask container-ps	      # Docker manager
-brew install --cask maccy			      # Clipboard manager
-brew install --cask raycast			   # Spotlight alternative
-brew install --cask iina			      # Open Source media player - replacement for quickTime / apple music
+brew install --cask zed
+brew install --cask brave-browser
+brew install --cask docker-desktop
+brew install --cask nordvpn
+brew install --cask stats
+brew install --cask claude
+brew install --cask iina
+brew install --cask rectangle
+brew install --cask whatsapp
 
 # Dev Env folder
 mkdir -p ~/Projects
@@ -126,7 +130,7 @@ declare -a MEDIA_EXTENSIONS=(
     "alac"  # ALAC (Apple Lossless Audio Codec)
     "wma"   # Windows Media Audio
     "caf"   # Core Audio Format
-    
+
     # Video formats
     "mp4"   # MP4 video
     "mkv"   # MKV video
