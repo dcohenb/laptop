@@ -71,6 +71,10 @@ else
    echo "# mac setup script" >> ~/.zshrc
    echo "echo \"Hello $name\"" >> ~/.zshrc
 
+   echo "" >> ~/.zshrc
+   echo "DEFAULT_USER=$(whoami)" >> ~/.zshrc
+   echo "prompt_dir() { prompt_segment blue black '%c'" >> ~/.zshrc
+
    # brew setup
    echo "" >> ~/.zshrc
    echo "# brew" >> ~/.zshrc
@@ -91,6 +95,9 @@ fi
 
 # Key repeats - repeat the key when holding it
 defaults write -g ApplePressAndHoldEnabled -bool false
+
+# Show file extensions
+defaults write -g AppleShowAllExtensions -bool true
 
 # Show hidden files and folders
 defaults write com.apple.Finder AppleShowAllFiles true
