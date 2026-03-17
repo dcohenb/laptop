@@ -8,6 +8,20 @@ if [ ! -d ~/.oh-my-zsh ]; then
    exit
 fi
 
+# Terminal theme
+THEME_NAME="catppuccin-frappe"  # must match exact name in Terminal.app
+if ! plutil -p ~/Library/Preferences/com.apple.Terminal.plist 2>/dev/null | grep -q "$THEME_NAME"; then
+    echo "⚠️  Terminal theme '$THEME_NAME' not found."
+    echo "Download and install it? [y/N] "
+    read -r response
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        url="https://raw.githubusercontent.com/catppuccin/Terminal.app/refs/heads/main/themes/catppuccin-frappe.terminal"
+        curl -O "$url"
+        echo "→ In Terminal: Settings → Profiles → select theme → Default"
+        echo "→ Re-open terminal when done."
+    fi
+fi
+
 # git && ssh Key setup
 SSH_KEY_PATH="$HOME/.ssh/id_ed25519"
 if [ ! -f "$SSH_KEY_PATH" ]; then
