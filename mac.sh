@@ -1,6 +1,8 @@
 #!/bin/bash
 
-xcode-select --install
+if ! xcode-select -p; then
+    xcode-select --install
+fi
 
 if [ ! -d ~/.oh-my-zsh ]; then
    echo "Install zsh first using:"
@@ -55,8 +57,6 @@ if [ ! -f "/opt/homebrew/bin/brew" ]; then
    echo "Installing Homebrew"
 
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-else
-   echo "Homebrew already installed, moving on..."
 fi
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
