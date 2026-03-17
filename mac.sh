@@ -1,56 +1,16 @@
 #!/bin/bash
+set -e
 
-if ! xcode-select -p; then
+if ! xcode-select -p &>/dev/null; then
     xcode-select --install
+    exit 0
 fi
 
 if [ ! -d ~/.oh-my-zsh ]; then
    echo "Install zsh first using:"
    echo 'sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
-   exit
+   exit 0
 fi
-
-# Terminal theme
-THEME_NAME="catppuccin-frappe"  # must match exact name in Terminal.app
-if ! plutil -p ~/Library/Preferences/com.apple.Terminal.plist 2>/dev/null | grep -q "$THEME_NAME"; then
-    echo "⚠️  Terminal theme '$THEME_NAME' not found."
-    echo "Download and install it? [y/N] "
-    read -r response
-    if [[ "$response" =~ ^[Yy]$ ]]; then
-        url="https://raw.githubusercontent.com/catppuccin/Terminal.app/refs/heads/main/themes/catppuccin-frappe.terminal"
-        curl -O "$url"
-        echo "→ In Terminal: Settings → Profiles → select theme → Default"
-        echo "→ Re-open terminal when done."
-    fi
-fi
-
-# git && ssh Key setup
-SSH_KEY_PATH="$HOME/.ssh/id_ed25519"
-if [ ! -f "$SSH_KEY_PATH" ]; then
-   echo "Setting up git & ssh..."
-   echo "What is your email?"
-   read email
-   echo "And your full name?"
-   read name
-
-   mkdir -p "$HOME/.ssh"
-   ssh-keygen -t ed25519 -f $SSH_KEY_PATH -N "" -C $email
-   ssh-add -K $SSH_KEY_PATH
-
-   git config --global user.email $email
-   git config --global user.name $name
-fi
-
-# Git
-git config --global alias.st status
-git config --global alias.co checkout
-git config --global alias.cm "\!git add -A && git commit -m"
-git config --global alias.wip "commit -am 'wip'"
-git config --global alias.save "\!git add -A && git commit -m 'SAVEPOINT'"
-git config --global alias.undo "reset HEAD~1 --mixed"
-
-git config pull.rebase false # make merge the default pull behaviour
-git config --global pager.branch false # Make git branch behave like it should
 
 # Install homebrew
 if [ ! -f "/opt/homebrew/bin/brew" ]; then
@@ -60,37 +20,82 @@ if [ ! -f "/opt/homebrew/bin/brew" ]; then
 fi
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+# Terminal theme
+THEME_NAME="catppuccin-frappe"  # must match exact name in Terminal.app
+if ! plutil -p ~/Library/Preferences/com.apple.Terminal.plist 2>/dev/null | grep -q "$THEME_NAME"; then
+    echo "⚠️  Terminal theme '$THEME_NAME' not found."
+    echo "Download and install it? [y/N] "
+    read -r response
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        brew install --cask font-meslo-lg-nerd-font
+
+        url="https://raw.githubusercontent.com/catppuccin/Terminal.app/refs/heads/main/themes/catppuccin-frappe.terminal"
+        file="$HOME/catppuccin-frappe.terminal"
+        curl -fsSL "$url" -o "$file"
+        echo "→ In Terminal: Settings → Profiles → Import theme from '$file' and set it as Default"
+        echo "→ Set font to 'MesloLGS Nerd Font Mono'"
+        echo "→ Re-open terminal when done."
+    fi
+fi
+
+# git && SSH Key setup
+SSH_KEY_PATH="$HOME/.ssh/id_ed25519"
+if [ ! -f "$SSH_KEY_PATH" ]; then
+   echo "Setting up git & ssh..."
+   echo "What is your email?"
+   read -r email
+   echo "And your full name?"
+   read -r name
+
+   mkdir -p "$HOME/.ssh"
+   ssh-keygen -t ed25519 -f $SSH_KEY_PATH -N "" -C $email
+
+   git config --global user.email "$email"
+   git config --global user.name "$name"
+fi
+
+ssh-add --apple-use-keychain $SSH_KEY_PATH
+pbcopy < "$SSH_KEY_PATH.pub"
+echo "✅ SSH public key copied to clipboard"
+echo "Go to: https://github.com/settings/ssh/new to add it to your account"
+
+# Git
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.cm "\!git add -A && git commit -m"
+git config --global alias.wip "commit -am 'wip'"
+git config --global alias.save "\!git add -A && git commit -m 'SAVEPOINT'"
+git config --global alias.undo "reset HEAD~1 --mixed"
+
+git config --global pull.rebase false # make merge the default pull behaviour
+git config --global pager.branch false # Make git branch behave like it should
+
 # Command Line configs (zsh)
-if grep -Fxq "# mac setup script" ~/.zshrc
-then
-   echo ".zshrc already setup, moving on..."
-else
+if ! grep -Fxq "# mac setup script" ~/.zshrc; then
    echo "setting up zsh config"
+   cat >> ~/.zshrc << 'EOF'
+# mac setup script
+ZSH_THEME="agnoster"
+DEFAULT_USER=$(whoami)
+prompt_dir() { prompt_segment blue black '%c' }
 
-   echo "" >> ~/.zshrc
-   echo "# mac setup script" >> ~/.zshrc
-   echo "echo \"Hello $name\"" >> ~/.zshrc
+# zsh-autosuggestions
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-   echo "" >> ~/.zshrc
-   echo "DEFAULT_USER=$(whoami)" >> ~/.zshrc
-   echo "prompt_dir() { prompt_segment blue black '%c'" >> ~/.zshrc
+# brew
+eval $(/opt/homebrew/bin/brew shellenv)
 
-   # brew setup
-   echo "" >> ~/.zshrc
-   echo "# brew" >> ~/.zshrc
-   echo 'eval $(/opt/homebrew/bin/brew shellenv)' >> ~/.zshrc
+# Docker Aliases
+alias dc="docker compose"                # Alias dc = docker compose
+dps() { docker ps }                      # List all running containers
+dsa() { docker stop $(docker ps -a -q) } # Stop all running containers
+dka() { docker kill $(docker ps -q) }    # Kill all running containers
+dra() { docker rm $(docker ps -a -q) }   # Remove all containers
+dsh() { docker exec -it $1 /bin/sh }     # sh into container with id
+dbash() { docker exec -it $1 /bin/bash } # bash into container with id
+drc() {docker exec -it $1 rails c}       # rails console into container with id
+EOF
 
-   # docker aliases
-   echo "" >> ~/.zshrc
-   echo '# Docker Aliases'                         >> ~/.zshrc
-   echo 'alias dc="docker compose"'                >> ~/.zshrc # Alias dc = docker compose
-   echo 'dps() { docker ps }'                      >> ~/.zshrc # List all running containers
-   echo 'dsa() { docker stop $(docker ps -a -q) }' >> ~/.zshrc # Stop all running containers
-   echo 'dka() { docker kill $(docker ps -q) }'    >> ~/.zshrc # Kill all running containers
-   echo 'dra() { docker rm $(docker ps -a -q) }'   >> ~/.zshrc # Remove all containers
-   echo 'dsh() { docker exec -it $1 /bin/sh }'     >> ~/.zshrc # sh into container with id
-   echo 'dbash() { docker exec -it $1 /bin/bash }' >> ~/.zshrc # bash into container with id
-   echo 'drc() {docker exec -it $1 rails c}'       >> ~/.zshrc # rails console into container with id
 fi
 
 # Key repeats - repeat the key when holding it
@@ -112,6 +117,7 @@ defaults write com.apple.screencapture type jpg
 # Software
 echo "Installing apps..."
 brew install node
+brew install zsh-autosuggestions
 brew install ollama
 brew install --cask 1password
 brew install --cask cursor
@@ -177,3 +183,12 @@ for EXT in "${MEDIA_EXTENSIONS[@]}"; do
 done
 
 echo "IINA has been set as the default player for all supported media files."
+
+echo ""
+echo ""
+echo "✅ Done! Manual steps remaining:"
+echo "  1. Import terminal theme from: $HOME/catppuccin-frappe.terminal"
+echo "     Settings → Profiles → gear icon → Import → set as Default"
+echo "     Set font to 'MesloLGS Nerd Font Mono'"
+echo "  2. Add your SSH key to GitHub: https://github.com/settings/ssh/new"
+echo "     (key is already copied to clipboard)"
